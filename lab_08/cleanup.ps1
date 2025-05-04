@@ -1,3 +1,5 @@
+#!/usr/bin/env pwsh
+
 # Check Azure connection
 try {
     Get-AzContext

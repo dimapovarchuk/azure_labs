@@ -1,3 +1,5 @@
+#!/usr/bin/env pwsh
+
 # Credentials variables
 $vmUsername = "localadmin"
 $vmPassword = "P@ssw0rd1234!"
