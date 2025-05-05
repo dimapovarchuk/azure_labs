@@ -1,4 +1,4 @@
-# Configure required providers and backend
+# Configure required providers
 terraform {
   required_providers {
     azurerm = {
@@ -10,6 +10,7 @@ terraform {
       version = "~> 3.0"
     }
   }
+}
 
 # Configure Azure Provider
 provider "azurerm" {
