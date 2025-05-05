@@ -1,4 +1,4 @@
-# Configure required providers
+# Configure required providers and backend
 terraform {
   required_providers {
     azurerm = {
@@ -9,6 +9,14 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.0"
     }
+  }
+
+  # Azure Backend Configuration
+  backend "azurerm" {
+    resource_group_name  = "az104-rg8"
+    container_name      = "tfstate"
+    key                = "terraform.tfstate"
+    # storage_account_name will be set during initialization
   }
 }
 

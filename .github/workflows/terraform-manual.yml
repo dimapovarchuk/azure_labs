@@ -22,6 +22,11 @@ env:
   # VM credentials
   TF_VAR_vm_username: ${{ secrets.VM_USERNAME }}
   TF_VAR_vm_password: ${{ secrets.VM_PASSWORD }}
+  # Azure authentication for backend
+  ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
+  ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
 
 # Jobs to run
 jobs:
@@ -51,11 +56,27 @@ jobs:
         pwd
         ls -la
 
-    # Initialize Terraform
+    # Create Storage Account and get access key
+    - name: Setup Backend Storage
+      run: |
+        cd lab_08
+        # Initialize without backend to create storage account
+        terraform init -backend=false
+        terraform apply -auto-approve -target=azurerm_storage_account.storage
+        # Get storage account name and key
+        STORAGE_ACCOUNT_NAME=$(terraform output -raw storage_account_name)
+        STORAGE_KEY=$(terraform output -raw storage_account_key)
+        # Set environment variables
+        echo "STORAGE_ACCOUNT_NAME=$STORAGE_ACCOUNT_NAME" >> $GITHUB_ENV
+        echo "ARM_ACCESS_KEY=$STORAGE_KEY" >> $GITHUB_ENV
+
+    # Initialize Terraform with backend
     - name: Terraform Init
       run: |
         cd lab_08
-        terraform init
+        terraform init \
+          -backend-config="storage_account_name=$STORAGE_ACCOUNT_NAME" \
+          -backend-config="access_key=$ARM_ACCESS_KEY"
 
     # Apply Terraform configuration
     - name: Terraform Apply
@@ -72,3 +93,10 @@ jobs:
         cd lab_08
         terraform plan -destroy
         terraform destroy -auto-approve
+
+    # Debug step to show final state
+    - name: Show Final State
+      if: always()
+      run: |
+        cd lab_08
+        terraform show
