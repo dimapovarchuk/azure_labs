@@ -10,6 +10,13 @@ terraform {
       version = "~> 3.0"
     }
   }
+
+  # Azure Backend Configuration
+  backend "azurerm" {
+    resource_group_name  = "az104-rg8"
+    container_name      = "tfstate"
+    key                = "terraform.tfstate"
+  }
 }
 
 # Configure Azure Provider

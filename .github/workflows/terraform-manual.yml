@@ -1,6 +1,5 @@
 name: 'Terraform Manual Operations'
 
-# Trigger workflow only manually with apply or destroy options
 on:
   workflow_dispatch:
     inputs:
@@ -12,17 +11,13 @@ on:
           - apply
           - destroy
 
-# Environment variables for Terraform and Azure authentication
 env:
-  # Terraform variables for Azure authentication
   TF_VAR_subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
   TF_VAR_tenant_id: ${{ secrets.TENANT_ID }}
   TF_VAR_client_id: ${{ secrets.CLIENT_ID }}
   TF_VAR_client_secret: ${{ secrets.CLIENT_SECRET }}
-  # VM credentials
   TF_VAR_vm_username: ${{ secrets.VM_USERNAME }}
   TF_VAR_vm_password: ${{ secrets.VM_PASSWORD }}
-  # Azure CLI authentication variables
   ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
   ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
@@ -34,84 +29,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout the repository
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    # Setup Terraform
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
-    # Debug: Show directory structure
-    - name: Debug - Show Directory Structure
-      run: |
-        echo "Current directory:"
-        pwd
-        echo "Directory contents:"
-        ls -la
-        echo "Lab directory contents:"
-        cd lab_08
-        ls -la
-
-    # Initial Terraform setup
-    - name: Initial Terraform Setup
+    - name: Terraform Init
       run: |
         cd lab_08
-        # Initialize Terraform without backend
-        terraform init -backend=false
-        # Create storage account for backend
-        terraform apply -auto-approve -target=azurerm_storage_account.storage || exit 1
-        # Export storage account details
-        STORAGE_ACCOUNT_NAME=$(terraform output -raw storage_account_name)
-        STORAGE_KEY=$(terraform output -raw storage_account_key)
-        # Save to GitHub environment
-        echo "STORAGE_ACCOUNT_NAME=$STORAGE_ACCOUNT_NAME" >> $GITHUB_ENV
-        echo "ARM_ACCESS_KEY=$STORAGE_KEY" >> $GITHUB_ENV
+        terraform init
 
-    # Configure Terraform backend
-    - name: Configure Terraform Backend
+    - name: Terraform Plan
       run: |
         cd lab_08
-        # Initialize with Azure backend
-        terraform init \
-          -backend-config="storage_account_name=$STORAGE_ACCOUNT_NAME" \
-          -backend-config="access_key=$ARM_ACCESS_KEY" \
-          -backend-config="resource_group_name=az104-rg8" \
-          -backend-config="container_name=tfstate" \
-          -backend-config="key=terraform.tfstate"
+        terraform plan -out=tfplan
 
-    # Apply Terraform configuration
     - name: Terraform Apply
       if: github.event.inputs.action == 'apply'
       run: |
         cd lab_08
-        echo "Planning Terraform changes..."
-        terraform plan -out=tfplan
-        echo "Applying Terraform changes..."
         terraform apply -auto-approve tfplan
 
-    # Destroy infrastructure
     - name: Terraform Destroy
       if: github.event.inputs.action == 'destroy'
       run: |
         cd lab_08
-        echo "Planning destruction..."
-        terraform plan -destroy -out=tfplan
-        echo "Executing destruction..."
         terraform destroy -auto-approve
 
-    # Show final state
-    - name: Show Final State
-      if: always()
-      run: |
-        cd lab_08
-        echo "Current Terraform state:"
-        terraform show || echo "No state available"
-
-    # Cleanup
     - name: Cleanup
       if: always()
       run: |
         cd lab_08
         rm -f tfplan || true
-        echo "Cleanup completed"
