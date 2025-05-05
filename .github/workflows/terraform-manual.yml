@@ -23,9 +23,6 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./lab_08
 
     steps:
     - name: Checkout Repository
@@ -34,22 +31,32 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
-    - name: List Directory Contents
+    - name: Debug - Show Current Directory
       run: |
+        pwd
+        ls -la
+        
+    - name: Debug - Show Lab Directory
+      run: |
+        cd lab_08
         pwd
         ls -la
 
     - name: Terraform Init
-      run: terraform init
+      run: |
+        cd lab_08
+        terraform init
 
     - name: Terraform Apply
       if: github.event.inputs.action == 'apply'
       run: |
+        cd lab_08
         terraform plan
         terraform apply -auto-approve
 
     - name: Terraform Destroy
       if: github.event.inputs.action == 'destroy'
       run: |
+        cd lab_08
         terraform plan -destroy
         terraform destroy -auto-approve
