@@ -12,17 +12,11 @@ on:
           - destroy
 
 env:
-  # Azure authentication
   ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
   ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
   ARM_ACCESS_KEY: ${{ secrets.STORAGE_ACCESS_KEY }}
-  # Terraform variables
-  TF_VAR_subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
-  TF_VAR_tenant_id: ${{ secrets.TENANT_ID }}
-  TF_VAR_client_id: ${{ secrets.CLIENT_ID }}
-  TF_VAR_client_secret: ${{ secrets.CLIENT_SECRET }}
   TF_VAR_vm_username: ${{ secrets.VM_USERNAME }}
   TF_VAR_vm_password: ${{ secrets.VM_PASSWORD }}
 

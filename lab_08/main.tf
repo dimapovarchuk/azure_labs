@@ -1,3 +1,4 @@
+# Configure required providers and backend
 terraform {
   required_providers {
     azurerm = {
@@ -11,8 +12,8 @@ terraform {
   }
 
   backend "azurerm" {
-    resource_group_name  = "az104-rg8"
-    storage_account_name = "tfstate1e9765da"
+    resource_group_name  = "az104-rg0"
+    storage_account_name = "tfstateb1247b78"
     container_name      = "tfstate"
     key                 = "terraform.tfstate"
   }

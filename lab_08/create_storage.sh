@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-RESOURCE_GROUP_NAME="az104-rg8"
+RESOURCE_GROUP_NAME="az104-rg0"
 STORAGE_ACCOUNT_NAME="tfstate$(openssl rand -hex 4)"
 CONTAINER_NAME="tfstate"
 LOCATION="eastus"
