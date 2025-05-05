@@ -39,30 +39,18 @@ jobs:
     - name: Terraform Init
       run: |
         cd lab_08
-        terraform init
-
-    - name: Force Unlock State
-      run: |
-        cd lab_08
-        terraform force-unlock -force 04769035-fc3e-acbd-2df0-6e1ab4fff7a6
+        terraform init -lock=false
 
     - name: Terraform Apply
       if: github.event.inputs.action == 'apply'
       run: |
         cd lab_08
-        terraform plan -input=false
-        terraform apply -auto-approve -input=false
+        terraform plan -lock=false
+        terraform apply -auto-approve -lock=false
 
     - name: Terraform Destroy
       if: github.event.inputs.action == 'destroy'
       run: |
         cd lab_08
-        terraform plan -destroy -input=false
-        terraform destroy -auto-approve -input=false
-
-    - name: Cleanup Lock (if exists)
-      if: always()
-      continue-on-error: true
-      run: |
-        cd lab_08
-        terraform force-unlock -force 04769035-fc3e-acbd-2df0-6e1ab4fff7a6
+        terraform plan -destroy -lock=false
+        terraform destroy -auto-approve -lock=false
