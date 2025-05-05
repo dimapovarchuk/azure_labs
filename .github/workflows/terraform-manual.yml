@@ -12,16 +12,19 @@ on:
           - destroy
 
 env:
+  # Azure authentication
+  ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
+  ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+  ARM_ACCESS_KEY: ${{ secrets.STORAGE_ACCESS_KEY }}
+  # Terraform variables
   TF_VAR_subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
   TF_VAR_tenant_id: ${{ secrets.TENANT_ID }}
   TF_VAR_client_id: ${{ secrets.CLIENT_ID }}
   TF_VAR_client_secret: ${{ secrets.CLIENT_SECRET }}
   TF_VAR_vm_username: ${{ secrets.VM_USERNAME }}
   TF_VAR_vm_password: ${{ secrets.VM_PASSWORD }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
-  ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
-  ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
 
 jobs:
   terraform:
@@ -40,25 +43,16 @@ jobs:
         cd lab_08
         terraform init
 
-    - name: Terraform Plan
-      run: |
-        cd lab_08
-        terraform plan -out=tfplan
-
     - name: Terraform Apply
       if: github.event.inputs.action == 'apply'
       run: |
         cd lab_08
-        terraform apply -auto-approve tfplan
+        terraform plan
+        terraform apply -auto-approve
 
     - name: Terraform Destroy
       if: github.event.inputs.action == 'destroy'
       run: |
         cd lab_08
+        terraform plan -destroy
         terraform destroy -auto-approve
-
-    - name: Cleanup
-      if: always()
-      run: |
-        cd lab_08
-        rm -f tfplan || true
