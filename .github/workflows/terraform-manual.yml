@@ -12,13 +12,11 @@ on:
           - destroy
 
 env:
-  # Azure CLI authentication
   ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
   ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
   ARM_ACCESS_KEY: ${{ secrets.STORAGE_ACCESS_KEY }}
-  # Terraform variables
   TF_VAR_subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
   TF_VAR_tenant_id: ${{ secrets.TENANT_ID }}
   TF_VAR_client_id: ${{ secrets.CLIENT_ID }}
@@ -43,6 +41,11 @@ jobs:
         cd lab_08
         terraform init
 
+    - name: Force Unlock State
+      run: |
+        cd lab_08
+        terraform force-unlock -force 04769035-fc3e-acbd-2df0-6e1ab4fff7a6
+
     - name: Terraform Apply
       if: github.event.inputs.action == 'apply'
       run: |
@@ -56,3 +59,10 @@ jobs:
         cd lab_08
         terraform plan -destroy -input=false
         terraform destroy -auto-approve -input=false
+
+    - name: Cleanup Lock (if exists)
+      if: always()
+      continue-on-error: true
+      run: |
+        cd lab_08
+        terraform force-unlock -force 04769035-fc3e-acbd-2df0-6e1ab4fff7a6
