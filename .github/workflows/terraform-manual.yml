@@ -1,6 +1,6 @@
 name: 'Terraform Manual Operations'
 
-# Trigger workflow only manually
+# Trigger workflow only manually with apply or destroy options
 on:
   workflow_dispatch:
     inputs:
@@ -12,9 +12,9 @@ on:
           - apply
           - destroy
 
-# Environment variables for Terraform
+# Environment variables for Terraform and Azure authentication
 env:
-  # Azure authentication variables
+  # Terraform variables for Azure authentication
   TF_VAR_subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
   TF_VAR_tenant_id: ${{ secrets.TENANT_ID }}
   TF_VAR_client_id: ${{ secrets.CLIENT_ID }}
@@ -22,81 +22,96 @@ env:
   # VM credentials
   TF_VAR_vm_username: ${{ secrets.VM_USERNAME }}
   TF_VAR_vm_password: ${{ secrets.VM_PASSWORD }}
-  # Azure authentication for backend
+  # Azure CLI authentication variables
   ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
   ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
 
-# Jobs to run
 jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
 
     steps:
-    # Check out the repository code
+    # Checkout the repository
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    # Install Terraform
+    # Setup Terraform
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
-    # Debug step to show root directory contents
-    - name: Debug - Show Current Directory
+    # Debug: Show directory structure
+    - name: Debug - Show Directory Structure
       run: |
+        echo "Current directory:"
         pwd
+        echo "Directory contents:"
         ls -la
-        
-    # Debug step to show lab_08 directory contents
-    - name: Debug - Show Lab Directory
-      run: |
+        echo "Lab directory contents:"
         cd lab_08
-        pwd
         ls -la
 
-    # Create Storage Account and get access key
-    - name: Setup Backend Storage
+    # Initial Terraform setup
+    - name: Initial Terraform Setup
       run: |
         cd lab_08
-        # Initialize without backend to create storage account
+        # Initialize Terraform without backend
         terraform init -backend=false
-        terraform apply -auto-approve -target=azurerm_storage_account.storage
-        # Get storage account name and key
+        # Create storage account for backend
+        terraform apply -auto-approve -target=azurerm_storage_account.storage || exit 1
+        # Export storage account details
         STORAGE_ACCOUNT_NAME=$(terraform output -raw storage_account_name)
         STORAGE_KEY=$(terraform output -raw storage_account_key)
-        # Set environment variables
+        # Save to GitHub environment
         echo "STORAGE_ACCOUNT_NAME=$STORAGE_ACCOUNT_NAME" >> $GITHUB_ENV
         echo "ARM_ACCESS_KEY=$STORAGE_KEY" >> $GITHUB_ENV
 
-    # Initialize Terraform with backend
-    - name: Terraform Init
+    # Configure Terraform backend
+    - name: Configure Terraform Backend
       run: |
         cd lab_08
+        # Initialize with Azure backend
         terraform init \
           -backend-config="storage_account_name=$STORAGE_ACCOUNT_NAME" \
-          -backend-config="access_key=$ARM_ACCESS_KEY"
+          -backend-config="access_key=$ARM_ACCESS_KEY" \
+          -backend-config="resource_group_name=az104-rg8" \
+          -backend-config="container_name=tfstate" \
+          -backend-config="key=terraform.tfstate"
 
     # Apply Terraform configuration
     - name: Terraform Apply
       if: github.event.inputs.action == 'apply'
       run: |
         cd lab_08
-        terraform plan
-        terraform apply -auto-approve
+        echo "Planning Terraform changes..."
+        terraform plan -out=tfplan
+        echo "Applying Terraform changes..."
+        terraform apply -auto-approve tfplan
 
-    # Destroy Terraform infrastructure
+    # Destroy infrastructure
     - name: Terraform Destroy
       if: github.event.inputs.action == 'destroy'
       run: |
         cd lab_08
-        terraform plan -destroy
+        echo "Planning destruction..."
+        terraform plan -destroy -out=tfplan
+        echo "Executing destruction..."
         terraform destroy -auto-approve
 
-    # Debug step to show final state
+    # Show final state
     - name: Show Final State
       if: always()
       run: |
         cd lab_08
-        terraform show
+        echo "Current Terraform state:"
+        terraform show || echo "No state available"
+
+    # Cleanup
+    - name: Cleanup
+      if: always()
+      run: |
+        cd lab_08
+        rm -f tfplan || true
+        echo "Cleanup completed"
