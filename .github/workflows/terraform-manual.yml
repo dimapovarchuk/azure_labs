@@ -1,5 +1,6 @@
 name: 'Terraform Manual Operations'
 
+# Trigger workflow only manually
 on:
   workflow_dispatch:
     inputs:
@@ -11,42 +12,52 @@ on:
           - apply
           - destroy
 
+# Environment variables for Terraform
 env:
+  # Azure authentication variables
   TF_VAR_subscription_id: ${{ secrets.SUBSCRIPTION_ID }}
   TF_VAR_tenant_id: ${{ secrets.TENANT_ID }}
   TF_VAR_client_id: ${{ secrets.CLIENT_ID }}
   TF_VAR_client_secret: ${{ secrets.CLIENT_SECRET }}
+  # VM credentials
   TF_VAR_vm_username: ${{ secrets.VM_USERNAME }}
   TF_VAR_vm_password: ${{ secrets.VM_PASSWORD }}
 
+# Jobs to run
 jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
 
     steps:
+    # Check out the repository code
     - name: Checkout Repository
       uses: actions/checkout@v3
 
+    # Install Terraform
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
 
+    # Debug step to show root directory contents
     - name: Debug - Show Current Directory
       run: |
         pwd
         ls -la
         
+    # Debug step to show lab_08 directory contents
     - name: Debug - Show Lab Directory
       run: |
         cd lab_08
         pwd
         ls -la
 
+    # Initialize Terraform
     - name: Terraform Init
       run: |
         cd lab_08
         terraform init
 
+    # Apply Terraform configuration
     - name: Terraform Apply
       if: github.event.inputs.action == 'apply'
       run: |
@@ -54,6 +65,7 @@ jobs:
         terraform plan
         terraform apply -auto-approve
 
+    # Destroy Terraform infrastructure
     - name: Terraform Destroy
       if: github.event.inputs.action == 'destroy'
       run: |
