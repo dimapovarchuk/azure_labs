@@ -1,0 +1,41 @@
++----------------------------------------------------------------------------------------+
+|                                    Azure Active Directory                              |
++----------------------------------------------------------------------------------------+
+                                           |
+                    +----------------------+----------------------+
+                    |                                           |
+            +-------v-------+                           +-------v-------+
+            |  Users        |                           |    Groups     |
+            +-------+-------+                           +-------+-------+
+                    |                                           |
+        +-----------+-----------+                     +--------+--------+
+        |                       |                     |                 |
++-------v-------+      +-------v-------+    +--------v--------+         |
+|  Local User   |      |  Guest User   |    | Security Group  |         |
+|  az104-user1  |      | External User |    |IT Lab Admins    |         |
++-------+-------+      +-------+-------+    +--------+--------+         |
+        |                      |                     |                  |
+        |                      |                     |                  |
+    Properties:           Properties:            Properties:            |
+    - Display Name       - Email                - Display Name          |
+    - UPN               - Display Name          - Description           |
+    - Password          - Redirect URL          - Mail Nickname         |
+    - Job Title         - Welcome Message       - Security Enabled      |
+    - Department                                                        |
+                                                                        | 
+                                                                        |
+                    +----------------------------------------+          |
+                    |            Membership Flow             |          |
+                    |   Local User -----> Security Group     |<---------+
+                    |   Guest User -----> Security Group     |
+                    +----------------------------------------+
+
+Legend:
+-----> : Membership/Association
+|     : Hierarchy/Connection
+
+Process Flow:
+1. Create Local User (az104-user1)
+2. Invite Guest User
+3. Create Security Group (IT Lab Administrators)
+4. Add both users to the Security Group
