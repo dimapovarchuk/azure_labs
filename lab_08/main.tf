@@ -14,8 +14,8 @@ terraform {
   backend "azurerm" {
     resource_group_name  = "az104-rg0"
     storage_account_name = "tfstate4c2114e0"
-    container_name      = "tfstate"
-    key                 = "terraform.tfstate"
+    container_name       = "tfstate"
+    key                  = "terraform.tfstate"
   }
 }
 
@@ -39,7 +39,7 @@ resource "random_string" "storage_account_name" {
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location
-  
+
   tags = {
     environment = "lab"
     project     = "az104-lab08"
@@ -50,8 +50,8 @@ resource "azurerm_resource_group" "rg" {
 resource "azurerm_storage_account" "storage" {
   name                     = "lab08${random_string.storage_account_name.result}"
   resource_group_name      = azurerm_resource_group.rg.name
-  location                = azurerm_resource_group.rg.location
-  account_tier            = var.storage_account_tier
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = var.storage_account_tier
   account_replication_type = var.storage_account_replication
 
   tags = {
@@ -63,7 +63,7 @@ resource "azurerm_storage_account" "storage" {
 # Create Storage Container
 resource "azurerm_storage_container" "container" {
   name                  = var.container_name
-  storage_account_name  = azurerm_storage_account.storage.name
+  storage_account_id    = azurerm_storage_account.storage.id
   container_access_type = "private"
 }
 
@@ -71,7 +71,7 @@ resource "azurerm_storage_container" "container" {
 resource "azurerm_virtual_network" "vnet" {
   name                = var.vnet_name
   address_space       = var.vnet_address_space
-  location           = azurerm_resource_group.rg.location
+  location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
   tags = {
@@ -191,11 +191,11 @@ resource "azurerm_windows_virtual_machine_scale_set" "vmss" {
   name                = var.vmss_name
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  sku                = var.vm_size
-  instances          = var.vmss_instances
-  admin_username     = var.vm_username
-  admin_password     = var.vm_password
-  zones              = [1, 2, 3]
+  sku                 = var.vm_size
+  instances           = var.vmss_instances
+  admin_username      = var.vm_username
+  admin_password      = var.vm_password
+  zones               = [1, 2, 3]
 
   source_image_reference {
     publisher = "MicrosoftWindowsServer"
@@ -232,7 +232,7 @@ resource "azurerm_public_ip" "lb_pip" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Static"
-  sku                = "Standard"
+  sku                 = "Standard"
 
   tags = {
     environment = "lab"
@@ -245,7 +245,7 @@ resource "azurerm_lb" "lb" {
   name                = "vmss-lb"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  sku                = "Standard"
+  sku                 = "Standard"
 
   frontend_ip_configuration {
     name                 = "PublicIPAddress"
@@ -280,5 +280,5 @@ resource "azurerm_lb_rule" "lb_rule" {
   backend_port                   = 80
   frontend_ip_configuration_name = "PublicIPAddress"
   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.backend_pool.id]
-  probe_id                      = azurerm_lb_probe.probe.id
+  probe_id                       = azurerm_lb_probe.probe.id
 }
