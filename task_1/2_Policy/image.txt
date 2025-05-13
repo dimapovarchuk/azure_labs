@@ -1,0 +1,53 @@
+Azure Resource Deployment Flow
+│
+├── 1. Resource Group Creation ✅
+│   ├── Name: TestRG
+│   ├── Location: eastus
+│   └── Status: Succeeded
+│
+├── 2. Storage Account Deployment ✅
+│   ├── Name: mystorageacc123xyz
+│   ├── Type: StorageV2
+│   ├── SKU: Standard_LRS
+│   ├── Features:
+│   │   ├── Encryption: Enabled
+│   │   ├── HTTPS: Enabled
+│   │   └── Access Tier: Hot
+│   └── Status: Succeeded
+│
+├── 3. Policy Definition Creation ✅
+│   ├── Name: deny-storage-accounts
+│   ├── Type: Custom
+│   ├── Mode: All
+│   ├── Rule:
+│   │   ├── Condition: type equals Microsoft.Storage/storageAccounts
+│   │   └── Effect: deny
+│   └── Status: Created
+│
+└── 4. Policy Assignment ✅
+    ├── Name: deny-storage-policy-assignment
+    ├── Scope: TestRG
+    ├── Enforcement: Default
+    └── Status: Assigned
+
+Resource States:
+┌────────────────────────────────────┐
+│ ✅ Resource Group: Active          │
+│ ✅ Storage Account: Available      │
+│ ✅ Policy: Enforced               │
+│ ✅ Assignment: Applied            │
+└────────────────────────────────────┘
+
+Deployment Summary:
+┌────────────────────────────────────┐
+│ Total Resources Created: 4         │
+│ Deployment Status: Successful      │
+│ Region: eastus                     │
+│ Policy State: Enforcing           │
+└────────────────────────────────────┘
+
+Policy Effect:
+┌────────────────────────────────────┐
+│ ❌ New Storage Accounts: Blocked   │
+│ ✅ Existing Storage: Preserved    │
+└────────────────────────────────────┘
