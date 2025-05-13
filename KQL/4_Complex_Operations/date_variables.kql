@@ -1,0 +1,7 @@
+// Using variables with let
+// Demonstrates date filtering using variables
+let MinDate = datetime(2007-01-01);
+let MaxDate = datetime(2007-12-31);
+StormEvents
+| where StartTime between (MinDate .. MaxDate)
+| summarize EventCount=count() by State

@@ -1,0 +1,5 @@
+// Time trends analysis
+// Creates a time chart showing event distribution by day
+StormEvents
+| summarize EventCount=count() by bin(StartTime, 1d)
+| render timechart

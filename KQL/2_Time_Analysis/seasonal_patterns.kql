@@ -1,0 +1,11 @@
+// Seasonal patterns
+// Analyzes event patterns by season
+StormEvents
+| extend Month = datetime_part("Month", StartTime)
+| extend Season = case(
+    Month between (3..5), "Spring",
+    Month between (6..8), "Summer",
+    Month between (9..11), "Fall",
+    "Winter")
+| summarize EventCount=count() by Season
+| render piechart

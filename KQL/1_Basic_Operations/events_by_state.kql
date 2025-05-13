@@ -1,0 +1,5 @@
+// Count events by state
+// Aggregates and sorts events by state to show distribution
+StormEvents
+| summarize count() by State
+| order by count_ desc

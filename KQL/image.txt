@@ -1,0 +1,26 @@
+KQL Practical Queries Structure
+│
+├── Basic Operations
+│   ├── basic_data_view.kql (Data Preview)
+│   ├── events_by_state.kql (State Grouping)
+│   └── filtered_aggregation.kql (Filtering & Aggregation)
+│
+├── Time Analysis
+│   ├── time_trends.kql (Daily Trends)
+│   ├── monthly_analysis.kql (Monthly Analysis)
+│   ├── yearly_monthly_distribution.kql (Yearly Distribution)
+│   └── seasonal_patterns.kql (Seasonal Patterns)
+│
+├── Calculations and Computations
+│   ├── duration_calculation.kql (Duration Calculations)
+│   ├── multiple_aggregations.kql (Multiple Aggregations)
+│   └── damage_analysis.kql (Damage Analysis)
+│
+├── Complex Operations
+│   ├── join_example.kql (Data Joining)
+│   ├── date_variables.kql (Variable Usage)
+│   └── severe_events.kql (Complex Filtering)
+│
+└── Special Analysis
+    ├── geographic_analysis.kql (Geographic Analysis)
+    └── event_duration.kql (Event Duration Analysis)

@@ -1,0 +1,6 @@
+// Complex filtering with multiple conditions
+// Shows severe events with casualties
+StormEvents
+| where DeathsDirect > 0 or InjuriesDirect > 0
+| project StartTime, EventType, State, DeathsDirect, InjuriesDirect
+| order by DeathsDirect desc

@@ -1,0 +1,7 @@
+// Time-based analysis
+// Shows event distribution by year and month
+StormEvents
+| extend Year = datetime_part("Year", StartTime),
+         Month = datetime_part("Month", StartTime)
+| summarize EventCount=count() by Year, Month
+| order by Year, Month

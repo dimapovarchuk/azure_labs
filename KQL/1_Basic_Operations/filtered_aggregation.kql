@@ -1,0 +1,6 @@
+// Filtering and aggregation
+// Shows top 10 event types after 2007, with event count
+StormEvents
+| where StartTime >= datetime(2007-01-01)
+| summarize EventCount=count() by EventType
+| top 10 by EventCount

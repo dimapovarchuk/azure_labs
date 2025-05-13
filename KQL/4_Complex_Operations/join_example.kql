@@ -1,0 +1,8 @@
+// Using join operator
+// Combines event counts with injury counts by state
+StormEvents
+| summarize EventCount=count() by State
+| join kind=inner (
+    StormEvents
+    | summarize InjuryCount=sum(InjuriesDirect) by State
+) on State

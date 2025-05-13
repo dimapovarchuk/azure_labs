@@ -1,0 +1,6 @@
+// Creating new columns with extend
+// Calculates event duration in hours and shows relevant fields
+StormEvents
+| extend DurationInHours = (EndTime - StartTime)/1h
+| where DurationInHours > 0
+| project StartTime, EndTime, DurationInHours, EventType

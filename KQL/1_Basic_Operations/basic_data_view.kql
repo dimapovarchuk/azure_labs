@@ -1,0 +1,4 @@
+// Basic query to view data
+// Shows first 10 rows from StormEvents table to understand data structure
+StormEvents
+| take 10

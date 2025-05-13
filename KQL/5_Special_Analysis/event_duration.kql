@@ -1,0 +1,7 @@
+// Event duration analysis
+// Calculates average event duration by type
+StormEvents
+| where EndTime > StartTime
+| extend Duration = EndTime - StartTime
+| summarize AvgDuration=avg(Duration) by EventType
+| order by AvgDuration desc

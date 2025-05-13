@@ -1,0 +1,7 @@
+// Monthly trend analysis
+// Shows event distribution by month with visualization
+StormEvents
+| extend Month = datetime_part("Month", StartTime)
+| summarize EventCount=count() by Month
+| order by Month asc
+| render columnchart

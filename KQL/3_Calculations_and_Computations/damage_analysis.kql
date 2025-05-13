@@ -1,0 +1,7 @@
+// Damage analysis
+// Shows top 10 event types by property damage
+StormEvents
+| where DamageProperty > 0
+| project EventType, DamageProperty
+| summarize TotalDamage=sum(DamageProperty) by EventType
+| top 10 by TotalDamage

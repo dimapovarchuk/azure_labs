@@ -1,0 +1,9 @@
+// Multiple aggregations
+// Summarizes events, injuries, and deaths by state
+StormEvents
+| summarize 
+    EventCount=count(),
+    InjuriesCount=sum(InjuriesDirect),
+    DeathCount=sum(DeathsDirect)
+    by State
+| order by EventCount desc

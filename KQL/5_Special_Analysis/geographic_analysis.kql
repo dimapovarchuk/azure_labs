@@ -1,0 +1,10 @@
+// Geographic distribution
+// Analyzes events by state with multiple metrics
+StormEvents
+| summarize 
+    Events=count(), 
+    Deaths=sum(DeathsDirect), 
+    Injuries=sum(InjuriesDirect),
+    AvgDamage=avg(DamageProperty)
+    by State
+| order by Events desc
