@@ -1,0 +1,88 @@
++----------------------------------------------------------------------------------------+
+|                               Lab 02a - Manage Subscriptions and RBAC                    |
++----------------------------------------------------------------------------------------+
+
++------------------+        +-----------------+        +------------------+
+|   Check Context  | -----> | Get Subscription| -----> |  Set Variables   |
++------------------+        +-----------------+        +------------------+
+                                                              |
+                                                              v
++------------------+        +-----------------+        +------------------+
+|  Check Existing  | <----- | Create Custom   | <----- |  Define Role     |
+|     Role         |        |     Role        |        |   Properties     |
++------------------+        +-----------------+        +------------------+
+        |
+        v
++------------------+
+|  Remove Old Role |
+| (if exists)      |
++------------------+
+        |
+        v
++------------------+        +-----------------+        +------------------+
+|  Create New      | -----> |    Wait for    | -----> |  Verify Role     |
+|  Custom Role     |        |   Propagation   |        |   Creation      |
++------------------+        +-----------------+        +------------------+
+                                                              |
+                                                              v
++------------------+        +-----------------+        +------------------+
+|  Check Existing  | <----- |  Create Help    | <----- |  Define Group    |
+|     Group        |        |  Desk Group     |        |   Properties     |
++------------------+        +-----------------+        +------------------+
+        |
+        v
++------------------+
+|  Assign Roles    |
+|  to Group        |
++------------------+
+        |
+        v
++------------------------+     +----------------------+
+|  Assign VM Contributor | --> | Wait for Propagation |
++------------------------+     +----------------------+
+        |
+        v
++------------------------+     +----------------------+
+|  Assign Custom Role    | --> | Wait for Propagation |
++------------------------+     +----------------------+
+        |
+        v
++------------------+        +-----------------+        +------------------+
+|  Verify Role     | -----> |    Display     | -----> |    Display      |
+|  Assignments     |        |    Summary     |        | Custom Roles    |
++------------------+        +-----------------+        +------------------+
+
+Flow Legend:
+------------
+---->  : Process flow
+  |    : Direct connection
+  v    : Flow direction
+
+Components:
+-----------
+[ Context & Variables ]
+- Azure Context
+- Subscription ID
+- Subscription Scope
+- Custom Role Name
+
+[ Custom Role Creation ]
+- Check Existing
+- Remove if Exists
+- Create New Role
+- Set Permissions
+
+[ Group Management ]
+- Check Existing
+- Create New Group
+- Set Group Properties
+
+[ Role Assignment ]
+- VM Contributor Role
+- Custom Support Role
+- Verification
+
+[ Output & Reporting ]
+- Role Assignments
+- Summary
+- Custom Roles List
