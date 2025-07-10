@@ -29,7 +29,7 @@ variable "cluster_name" {
 }
 
 variable "acr_name" {
-  default = "acr500lab09" # Має бути глобально унікальним
+  default = "acr500lab09"
 }
 
 # Resource Group
@@ -123,8 +123,20 @@ resource "kubernetes_deployment" "nginx_external" {
 
       spec {
         container {
-          image = "${azurerm_container_registry.acr.login_server}/nginx:v1"
+          image = "nginx:latest"
           name  = "nginx"
+          image_pull_policy = "IfNotPresent"
+
+          resources {
+            limits = {
+              cpu    = "200m"
+              memory = "256Mi"
+            }
+            requests = {
+              cpu    = "100m"
+              memory = "128Mi"
+            }
+          }
 
           port {
             container_port = 80
@@ -132,6 +144,10 @@ resource "kubernetes_deployment" "nginx_external" {
         }
       }
     }
+  }
+
+  timeouts {
+    create = "5m"
   }
 
   depends_on = [azurerm_role_assignment.aks_acr]
@@ -183,8 +199,20 @@ resource "kubernetes_deployment" "nginx_internal" {
 
       spec {
         container {
-          image = "${azurerm_container_registry.acr.login_server}/nginx:v1"
+          image = "nginx:latest"
           name  = "nginx"
+          image_pull_policy = "IfNotPresent"
+
+          resources {
+            limits = {
+              cpu    = "200m"
+              memory = "256Mi"
+            }
+            requests = {
+              cpu    = "100m"
+              memory = "128Mi"
+            }
+          }
 
           port {
             container_port = 80
@@ -192,6 +220,10 @@ resource "kubernetes_deployment" "nginx_internal" {
         }
       }
     }
+  }
+
+  timeouts {
+    create = "5m"
   }
 
   depends_on = [azurerm_role_assignment.aks_acr]
