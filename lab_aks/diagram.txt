@@ -1,0 +1,49 @@
+                          Internet
+                             |
+                             |
+                        [Public IP]
+                             |
+                     [Load Balancer]
+                             |
+                  +------------------+
+                  |                  |
+                  |                  |
+    +-------------)-----------------(---------------+
+    |             |                 |               |
+    |        [ACR Registry]    [AKS Cluster]        |
+    |             |                 |               |
+    |      [nginx image]            |               |
+    |                               |               |
+    |                    +----------------+         |
+    |                    |                |         |
+    |                    | nginxexternal  |         |
+    |                    | (Public Access)|         |
+    |                    |                |         |
+    |                    +----------------+         |
+    |                           |                   |
+    |                    +----------------+         |
+    |                    |                |         |
+    |                    | nginxinternal  |         |
+    |                    | (Private Only) |         |
+    |                    |                |         |
+    |                    +----------------+         |
+    |                                               |
+    +-----------------------------------------------+
+
+Access Flows:
+---------------
+1. External: Internet -> Public IP -> LoadBalancer -> nginxexternal
+2. Internal: Access to nginxinternal only from within the cluster
+
+Components:
+-----------
+1. ACR - Container Registry Storage
+2. AKS - Kubernetes Cluster
+3. Nginx External - Public Access
+4. Nginx Internal - Private Access
+
+Security:
+--------
+- ACR: Private Registry
+- AKS: Managed Identities
+- Separation of public/private access
